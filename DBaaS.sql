@@ -17,18 +17,18 @@ CREATE TABLE uploads (
 
 CREATE TABLE results (
   id 				int NOT NULL AUTO_INCREMENT,
-  job 				varchar(320) NOT NULL,
+  job 				int,
   output 			varchar(1024),
   execute_status  	ENUM('in progress', 'done') NOT NULL,
-  execute_date 	 	datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, 
+  execute_date 	 	datetime NOT NULL DEFAULT CURRENT_TIMESTAMP, 
   PRIMARY KEY (id),
   FOREIGN KEY (job) REFERENCES jobs(id)
 ) AUTO_INCREMENT=1;
 
 CREATE TABLE jobs (
   id 				int NOT NULL AUTO_INCREMENT,
-  upload 			varchar(320) NOT NULL,
-  job 				varchar(512),
+  upload 			int,
+  job_query 		varchar(512),
   job_status  		ENUM('executed', 'none') NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (upload) REFERENCES uploads(id)
