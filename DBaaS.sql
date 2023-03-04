@@ -1,6 +1,6 @@
 DROP DATABASE IF EXISTS DBaaS;
 CREATE DATABASE DBaaS; 
-USE DBaas;
+USE DBaaS;
 
 SET NAMES utf8mb4 ;
 SET character_set_client = utf8mb4 ;
@@ -15,6 +15,15 @@ CREATE TABLE uploads (
   PRIMARY KEY (id)
 ) AUTO_INCREMENT=1;
 
+CREATE TABLE jobs (
+  id 				int NOT NULL AUTO_INCREMENT,
+  upload 			int,
+  job_query 		varchar(512),
+  job_status  		ENUM('executed', 'none') NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (upload) REFERENCES uploads(id)
+) AUTO_INCREMENT=1;
+
 CREATE TABLE results (
   id 				int NOT NULL AUTO_INCREMENT,
   job 				int,
@@ -23,13 +32,4 @@ CREATE TABLE results (
   execute_date 	 	datetime NOT NULL DEFAULT CURRENT_TIMESTAMP, 
   PRIMARY KEY (id),
   FOREIGN KEY (job) REFERENCES jobs(id)
-) AUTO_INCREMENT=1;
-
-CREATE TABLE jobs (
-  id 				int NOT NULL AUTO_INCREMENT,
-  upload 			int,
-  job_query 		varchar(512),
-  job_status  		ENUM('executed', 'none') NOT NULL,
-  PRIMARY KEY (id),
-  FOREIGN KEY (upload) REFERENCES uploads(id)
 ) AUTO_INCREMENT=1;
