@@ -2,3 +2,4 @@
 *.zip
 *.sum
 .idea
+/global/constant.go

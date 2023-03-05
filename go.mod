@@ -3,13 +3,14 @@ module github.com/mohammadmahdi255/Cloud-job-service
 go 1.19
 
 require (
+	github.com/aws/aws-sdk-go v1.44.214
 	github.com/labstack/echo/v4 v4.10.2
+	github.com/stretchr/objx v0.5.0
 	gorm.io/driver/mysql v1.4.7
 	gorm.io/gorm v1.24.6
 )
 
 require (
-	github.com/aws/aws-sdk-go v1.44.214 // indirect
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
