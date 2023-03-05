@@ -22,14 +22,18 @@ type Database struct {
 
 func NewDatabase() *Database {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/DBaaS", user, password, url, port)
-	fmt.Println(dsn)
 	db, _ := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
 	return &Database{db}
 }
 
 func (d *Database) AddUpload(upload *models.Upload) error {
-
 	err := d.db.Create(upload).Error
 	return err
+}
+
+func (d *Database) GetUpload(id int) (*models.Upload, error) {
+	upload := &models.Upload{Id: id}
+	err := d.db.First(upload).Error
+	return upload, err
 }
