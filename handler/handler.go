@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"github.com/mohammadmahdi255/Cloud-job-service/database"
-	"github.com/mohammadmahdi255/Cloud-job-service/handler/request/models"
+	"github.com/mohammadmahdi255/Cloud-job-service/database/models"
 	ResponseModels "github.com/mohammadmahdi255/Cloud-job-service/handler/response/models"
+	"github.com/mohammadmahdi255/Cloud-job-service/rabbitmq"
 	"github.com/mohammadmahdi255/Cloud-job-service/storage"
 	"github.com/stretchr/objx"
 	"net/http"
@@ -14,10 +15,11 @@ import (
 type Handler struct {
 	database *database.Database
 	store    *storage.Storage
+	producer *rabbitmq.Producer
 }
 
-func NewHandler(database *database.Database, store *storage.Storage) *Handler {
-	return &Handler{database, store}
+func NewHandler(database *database.Database, store *storage.Storage, producer *rabbitmq.Producer) *Handler {
+	return &Handler{database, store, producer}
 }
 
 func (h *Handler) Authentication(c echo.Context) error {
@@ -93,8 +95,16 @@ func (h *Handler) Execute(c echo.Context) error {
 		return c.JSON(http.StatusOK, ResponseModels.NewMessage("can not be Execute because enable is 0"))
 	}
 
-	// todo: send id with rabbitMQ to job service
-	return c.JSON(http.StatusOK, ResponseModels.NewMessage(upload))
+	// todo: send id with rabbitMQ to services
+	dic = objx.New(map[string]interface{}{
+		"id": upload.Id,
+	})
+	err = h.producer.Send(dic.MustJSON())
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, ResponseModels.NewMessage(err.Error()))
+	}
+
+	return c.JSON(http.StatusOK, ResponseModels.NewMessage(fmt.Sprintf("new job created for upload with id: %d", upload.Id)))
 }
 
 func (h *Handler) JobStatus(c echo.Context) error {
