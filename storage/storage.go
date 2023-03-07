@@ -61,6 +61,9 @@ func (s *Storage) CreateBucket(bucket string) error {
 
 func (s *Storage) Upload(bucket, filename string, file multipart.File) error {
 	sess, err := session.NewSession(&s.svc.Config)
+	if err != nil {
+		return err
+	}
 	uploader := s3manager.NewUploader(sess)
 
 	_, err = uploader.Upload(&s3manager.UploadInput{
@@ -98,7 +101,7 @@ func (s *Storage) PutObjectTag(bucket, object string, name string) error {
 		return err
 	}
 
-	fmt.Println("congratulations. You put tags on object")
+	fmt.Println("Successfully put tags on object")
 	return nil
 }
 
@@ -122,4 +125,27 @@ func (s *Storage) GetListObject(bucket string) ([]*s3.Object, error) {
 
 	return resp.Contents, nil
 
+}
+
+func (s *Storage) Download(bucket, item string) (*aws.WriteAtBuffer, error) {
+	sess, err := session.NewSession(&s.svc.Config)
+	if err != nil {
+		return nil, err
+	}
+	downloader := s3manager.NewDownloader(sess)
+
+	buffer := aws.NewWriteAtBuffer([]byte{})
+	numBytes, err := downloader.Download(buffer,
+		&s3.GetObjectInput{
+			Bucket: aws.String(bucket),
+			Key:    aws.String(item),
+		})
+
+	if err != nil {
+		return nil, fmt.Errorf("unable to download item %q, %v", item, err)
+	}
+
+	fmt.Println("Downloaded ", numBytes, " bytes")
+
+	return buffer, nil
 }

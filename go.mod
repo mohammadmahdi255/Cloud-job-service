@@ -5,7 +5,9 @@ go 1.19
 require (
 	github.com/aws/aws-sdk-go v1.44.214
 	github.com/labstack/echo/v4 v4.10.2
+	github.com/rabbitmq/amqp091-go v1.7.0
 	github.com/stretchr/objx v0.5.0
+	gorm.io/datatypes v1.1.0
 	gorm.io/driver/mysql v1.4.7
 	gorm.io/gorm v1.24.6
 )
