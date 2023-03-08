@@ -5,20 +5,21 @@ import (
 	"fmt"
 	"github.com/mohammadmahdi255/Cloud-job-service/database"
 	"github.com/mohammadmahdi255/Cloud-job-service/database/models"
+	"github.com/mohammadmahdi255/Cloud-job-service/global"
 	"github.com/stretchr/objx"
 	"io"
 	"log"
 	"net/http"
 	"net/http/httputil"
+	"sync"
 	"time"
 )
 
-const (
-	apiUrl = "https://api.codex.jaagrav.in"
-)
-
-func ExecuteJob() {
+func ExecuteJob(mutex *sync.RWMutex) {
 	d := database.NewDatabase()
+	m := NewMailgun()
+
+	mutex.Unlock()
 
 	for {
 
@@ -34,16 +35,22 @@ func ExecuteJob() {
 			}
 		}
 
-		err = d.UpdateJob(job.Id)
-		if err != nil {
-			panic(err)
-		}
 		result := models.NewResult(job.Id)
 		err = d.AddResult(result)
 		if err != nil {
 			panic(err)
 		}
-		output := executeRequest(job)
+		output, err := executeRequest(job)
+
+		output += err.Error()
+
+		if err.Error() != "" {
+			err := d.UpdateUpload(job.Upload, false)
+			if err != nil {
+				panic(err)
+			}
+		}
+
 		log.Println(output)
 
 		err = d.UpdateResult(result.Id, output, "done")
@@ -51,15 +58,32 @@ func ExecuteJob() {
 			panic(err)
 		}
 
+		err = d.UpdateJob(job.Id)
+		if err != nil {
+			panic(err)
+		}
+
+		upload, err := d.GetUpload(job.Upload)
+		if err != nil {
+			panic(err)
+		}
+		message, err := m.SendSimpleMessage(output, upload.Email)
+
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Printf("message %s send to %s successfully\n", message, upload.Email)
+
 	}
 }
 
-func executeRequest(job *models.Job) string {
+func executeRequest(job *models.Job) (string, error) {
 	payload := bytes.NewReader([]byte(job.JobQuery))
 	client := http.Client{}
 
 	// create http request
-	req, _ := http.NewRequest(http.MethodPost, apiUrl, payload)
+	req, _ := http.NewRequest(http.MethodPost, global.ApiUrl, payload)
 	req.Header.Set("Content-type", "application/x-www-form-urlencoded")
 
 	// check the request
@@ -90,9 +114,5 @@ func executeRequest(job *models.Job) string {
 
 	fmt.Printf("\noutput:\n")
 
-	if r.Get("error").String() == "" {
-		return r.Get("output").String()
-	} else {
-		return r.Get("error").String()
-	}
+	return r.Get("output").String(), fmt.Errorf("%s", r.Get("error").String())
 }

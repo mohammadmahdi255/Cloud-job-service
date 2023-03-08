@@ -9,9 +9,10 @@ import (
 	"github.com/stretchr/objx"
 	"log"
 	"net/url"
+	"sync"
 )
 
-func JobMaker(bucket, endpoint, URL string) {
+func JobMaker(mutex *sync.RWMutex, bucket, endpoint, URL string) {
 
 	d := database.NewDatabase()
 	s := storage.NewStorage("default", endpoint)
@@ -21,6 +22,8 @@ func JobMaker(bucket, endpoint, URL string) {
 	if err != nil {
 		panic(err)
 	}
+
+	mutex.Unlock()
 
 	for data := range message {
 		log.Printf("Received Data: %s", string(data.Body))

@@ -1,7 +1,7 @@
 package models
 
 import (
-	"gorm.io/datatypes"
+	"time"
 )
 
 type Result struct {
@@ -9,7 +9,7 @@ type Result struct {
 	Job           int `gorm:"references:id"`
 	Output        string
 	ExecuteStatus string
-	ExecuteDate   datatypes.Date
+	ExecuteDate   time.Time `gorm:"default:CURRENT_TIMESTAMP()"`
 }
 
 func NewResult(jobId int) *Result {

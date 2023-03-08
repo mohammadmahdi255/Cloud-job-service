@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"github.com/mohammadmahdi255/Cloud-job-service/database"
@@ -9,6 +10,8 @@ import (
 	"github.com/mohammadmahdi255/Cloud-job-service/rabbitmq"
 	"github.com/mohammadmahdi255/Cloud-job-service/storage"
 	"github.com/stretchr/objx"
+	"github.com/supertokens/supertokens-golang/recipe/session/sessmodels"
+	"github.com/supertokens/supertokens-golang/supertokens"
 	"net/http"
 )
 
@@ -22,13 +25,7 @@ func NewHandler(database *database.Database, store *storage.Storage, producer *r
 	return &Handler{database, store, producer}
 }
 
-func (h *Handler) Authentication(c echo.Context) error {
-	return nil
-}
-
 func (h *Handler) Upload(c echo.Context) error {
-	// todo: check token
-
 	// todo: get json data
 	upload, err := models.NewUpload(c.FormValue("json"))
 	if err != nil {
@@ -108,5 +105,35 @@ func (h *Handler) Execute(c echo.Context) error {
 }
 
 func (h *Handler) JobStatus(c echo.Context) error {
-	return nil
+	result, err := h.database.GetAllUserResult("adel110@aut.ac.ir")
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, ResponseModels.NewMessage(err.Error()))
+	}
+
+	return c.JSON(http.StatusOK, result)
+}
+
+func (h *Handler) sessionInfo(c echo.Context) error {
+	sessionContainer := c.Get("session").(sessmodels.SessionContainer)
+
+	if sessionContainer == nil {
+		return errors.New("no session found")
+	}
+	sessionData, err := sessionContainer.GetSessionData()
+	if err != nil {
+		err = supertokens.ErrorHandler(err, c.Request(), c.Response())
+		if err != nil {
+			fmt.Println(err.Error())
+			return err
+		}
+		return nil
+	}
+
+	data := map[string]interface{}{
+		"sessionHandle":      sessionContainer.GetHandle(),
+		"userId":             sessionContainer.GetUserID(),
+		"accessTokenPayload": sessionContainer.GetAccessTokenPayload(),
+		"sessionData":        sessionData,
+	}
+	return c.JSON(http.StatusOK, data)
 }
