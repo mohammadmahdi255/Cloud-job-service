@@ -19,7 +19,7 @@ type Database struct {
 }
 
 func NewDatabase() *Database {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/DBaaS", user, password, url, port)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/DBaaS?parseTime=true", user, password, url, port)
 	db, _ := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
 	return &Database{db}
@@ -34,6 +34,12 @@ func (d *Database) GetUpload(id int) (*models.Upload, error) {
 	upload := &models.Upload{Id: id}
 	err := d.db.First(upload).Error
 	return upload, err
+}
+
+func (d *Database) UpdateUpload(id int, isEnable bool) error {
+	upload := &models.Upload{Id: id}
+	err := d.db.Model(upload).Update("is_enable", isEnable).Error
+	return err
 }
 
 func (d *Database) AddJob(job *models.Job) error {
@@ -55,6 +61,7 @@ func (d *Database) UpdateJob(id int) error {
 
 func (d *Database) AddResult(result *models.Result) error {
 	err := d.db.Create(result).Error
+	fmt.Println(result)
 	return err
 }
 
@@ -62,4 +69,30 @@ func (d *Database) UpdateResult(id int, output, executeStatus string) error {
 	result := &models.Result{Id: id, Output: output, ExecuteStatus: executeStatus}
 	err := d.db.Model(result).Updates(result).Error
 	return err
+}
+
+func (d *Database) GetAllUserResult(email string) ([]map[string]interface{}, error) {
+
+	rows, err := d.db.Table("uploads").Select("uploads.id, email, program_language, execute_status, execute_date").
+		Joins("join jobs j join results r on uploads.id = j.upload and j.id = r.job").
+		Where("email = ?", email).Rows()
+
+	if err != nil {
+		return nil, err
+	}
+
+	arr := make([]map[string]interface{}, 10)
+
+	for rows.Next() {
+		dic := map[string]interface{}{}
+		err := d.db.ScanRows(rows, dic)
+		if err != nil {
+			return nil, err
+		}
+		arr = append(arr, dic)
+		fmt.Println(dic)
+	}
+
+	err = rows.Close()
+	return arr, err
 }

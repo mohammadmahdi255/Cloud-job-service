@@ -6,10 +6,7 @@ import (
 	"github.com/mohammadmahdi255/Cloud-job-service/database"
 	"github.com/mohammadmahdi255/Cloud-job-service/handler"
 	"github.com/mohammadmahdi255/Cloud-job-service/rabbitmq"
-	"github.com/mohammadmahdi255/Cloud-job-service/services"
 	"github.com/mohammadmahdi255/Cloud-job-service/storage"
-	_ "log"
-	_ "net/http"
 	"os"
 )
 
@@ -55,13 +52,16 @@ func main() {
 	h := handler.NewHandler(d, s, p)
 	h.RegisterRoutes(g)
 
-	go func() {
-		services.JobMaker(BUCKET, ENDPOINT, url)
-	}()
-
-	go func() {
-		services.ExecuteJob()
-	}()
+	//mutex := &sync.RWMutex{}
+	//mutex.Lock()
+	//go func() {
+	//	services.JobMaker(mutex, BUCKET, ENDPOINT, url)
+	//}()
+	//
+	//mutex.Lock()
+	//go func() {
+	//	services.ExecuteJob(mutex)
+	//}()
 
 	e.Logger.Fatal(e.Start(":8080"))
 

@@ -108,5 +108,6 @@ func (h *Handler) Execute(c echo.Context) error {
 }
 
 func (h *Handler) JobStatus(c echo.Context) error {
+	h.database.GetAllUserResult("adel110@aut.ac.ir")
 	return nil
 }

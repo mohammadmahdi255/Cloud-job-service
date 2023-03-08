@@ -29,7 +29,9 @@ CREATE TABLE results (
   job 				int,
   output 			varchar(1024),
   execute_status  	ENUM('in progress', 'done') NOT NULL,
-  execute_date 	 	datetime NOT NULL DEFAULT CURRENT_TIMESTAMP, 
+  execute_date 	 	datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   FOREIGN KEY (job) REFERENCES jobs(id)
 ) AUTO_INCREMENT=1;
+
+SELECT * FROM uploads u join jobs j join results r on u.id = j.upload and j.id = r.job
