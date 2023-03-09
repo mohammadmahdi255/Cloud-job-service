@@ -33,5 +33,3 @@ CREATE TABLE results (
   PRIMARY KEY (id),
   FOREIGN KEY (job) REFERENCES jobs(id)
 ) AUTO_INCREMENT=1;
-
-SELECT * FROM uploads u join jobs j join results r on u.id = j.upload and j.id = r.job

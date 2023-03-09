@@ -3,15 +3,9 @@ package database
 import (
 	"fmt"
 	"github.com/mohammadmahdi255/Cloud-job-service/database/models"
+	"github.com/mohammadmahdi255/Cloud-job-service/global"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-)
-
-const (
-	user     = "root"
-	password = "jUlfRTMMkd9GMUaVJLUn10JB"
-	url      = "may.iran.liara.ir"
-	port     = 33761
 )
 
 type Database struct {
@@ -19,7 +13,7 @@ type Database struct {
 }
 
 func NewDatabase() *Database {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/DBaaS?parseTime=true", user, password, url, port)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/DBaaS?parseTime=true", global.User, global.Password, global.Url, global.Port)
 	db, _ := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
 	return &Database{db}
@@ -81,7 +75,7 @@ func (d *Database) GetAllUserResult(email string) ([]map[string]interface{}, err
 		return nil, err
 	}
 
-	arr := make([]map[string]interface{}, 10)
+	arr := make([]map[string]interface{}, 0, 10)
 
 	for rows.Next() {
 		dic := map[string]interface{}{}
@@ -89,8 +83,9 @@ func (d *Database) GetAllUserResult(email string) ([]map[string]interface{}, err
 		if err != nil {
 			return nil, err
 		}
+
+		dic["file"] = fmt.Sprintf("%s/%s/%d.%s", global.Endpoint, global.Bucket, dic["id"], dic["program_language"])
 		arr = append(arr, dic)
-		fmt.Println(dic)
 	}
 
 	err = rows.Close()

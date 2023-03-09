@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/mohammadmahdi255/Cloud-job-service/database"
 	"github.com/mohammadmahdi255/Cloud-job-service/database/models"
+	"github.com/mohammadmahdi255/Cloud-job-service/global"
 	"github.com/stretchr/objx"
 	"io"
 	"log"
@@ -12,10 +13,6 @@ import (
 	"net/http/httputil"
 	"sync"
 	"time"
-)
-
-const (
-	apiUrl = "https://api.codex.jaagrav.in"
 )
 
 func ExecuteJob(mutex *sync.RWMutex) {
@@ -86,7 +83,7 @@ func executeRequest(job *models.Job) (string, error) {
 	client := http.Client{}
 
 	// create http request
-	req, _ := http.NewRequest(http.MethodPost, apiUrl, payload)
+	req, _ := http.NewRequest(http.MethodPost, global.ApiUrl, payload)
 	req.Header.Set("Content-type", "application/x-www-form-urlencoded")
 
 	// check the request
