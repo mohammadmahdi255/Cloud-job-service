@@ -1,4 +1,4 @@
-package services
+package main
 
 import (
 	"bytes"
@@ -6,74 +6,81 @@ import (
 	"github.com/mohammadmahdi255/Cloud-job-service/database"
 	"github.com/mohammadmahdi255/Cloud-job-service/database/models"
 	"github.com/mohammadmahdi255/Cloud-job-service/global"
+	mail_service "github.com/mohammadmahdi255/Cloud-job-service/mail-service"
 	"github.com/stretchr/objx"
 	"io"
 	"log"
 	"net/http"
 	"net/http/httputil"
-	"sync"
 	"time"
 )
 
-func ExecuteJob(mutex *sync.RWMutex) {
-	d := database.NewDatabase()
-	m := NewMailgun()
-
-	mutex.Unlock()
-
+func main() {
 	for {
+		d := database.NewDatabase()
+		m := mail_service.NewMailgun()
 
-		job, err := d.GetJob()
+		for {
 
-		if err != nil {
-			if err.Error() == "record not found" {
-				time.Sleep(5 * time.Second)
-				continue
-			} else {
-				log.Println(err)
-				return
-			}
-		}
+			job, err := d.GetJob()
 
-		result := models.NewResult(job.Id)
-		err = d.AddResult(result)
-		if err != nil {
-			panic(err)
-		}
-		output, err := executeRequest(job)
-
-		output += err.Error()
-
-		if err.Error() != "" {
-			err := d.UpdateUpload(job.Upload, false)
 			if err != nil {
-				panic(err)
+				if err.Error() == "record not found" {
+					time.Sleep(5 * time.Second)
+					continue
+				} else {
+					log.Println(err)
+					break
+				}
 			}
+
+			result := models.NewResult(job.Id)
+			err = d.AddResult(result)
+			if err != nil {
+				fmt.Println(err)
+				break
+			}
+			output, err := executeRequest(job)
+
+			output += err.Error()
+
+			if err.Error() != "" {
+				err := d.UpdateUpload(job.Upload, false)
+				if err != nil {
+					fmt.Println(err)
+					break
+				}
+			}
+
+			log.Println(output)
+
+			err = d.UpdateResult(result.Id, output, "done")
+			if err != nil {
+				fmt.Println(err)
+				break
+			}
+
+			err = d.UpdateJob(job.Id)
+			if err != nil {
+				fmt.Println(err)
+				break
+			}
+
+			upload, err := d.GetUpload(job.Upload)
+			if err != nil {
+				fmt.Println(err)
+				break
+			}
+			message, err := m.SendSimpleMessage(output, upload.Email)
+
+			if err != nil {
+				fmt.Println(err)
+				break
+			}
+
+			fmt.Printf("message %s send to %s successfully\n", message, upload.Email)
+
 		}
-
-		log.Println(output)
-
-		err = d.UpdateResult(result.Id, output, "done")
-		if err != nil {
-			panic(err)
-		}
-
-		err = d.UpdateJob(job.Id)
-		if err != nil {
-			panic(err)
-		}
-
-		upload, err := d.GetUpload(job.Upload)
-		if err != nil {
-			panic(err)
-		}
-		message, err := m.SendSimpleMessage(output, upload.Email)
-
-		if err != nil {
-			panic(err)
-		}
-
-		fmt.Printf("message %s send to %s successfully\n", message, upload.Email)
 
 	}
 }
@@ -92,7 +99,7 @@ func executeRequest(job *models.Job) (string, error) {
 
 	resp, err := client.Do(req)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 
 	// check the response
@@ -110,7 +117,12 @@ func executeRequest(job *models.Job) (string, error) {
 	}
 
 	bytesString, _ := io.ReadAll(resp.Body)
-	r := objx.MustFromJSON(string(bytesString))
+	fmt.Println(string(bytesString))
+	r, err := objx.FromJSON(string(bytesString))
+
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	fmt.Printf("\noutput:\n")
 

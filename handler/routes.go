@@ -11,9 +11,10 @@ func (h *Handler) RegisterRoutes(g *echo.Group) {
 
 	g.POST("/upload", h.Upload, h.verifySession(nil))
 	g.POST("/execute", h.Execute, h.verifySession(nil))
+	g.POST("/signout", h.RevokeToken, h.verifySession(nil))
 
 	g.GET("/job/status", h.JobStatus, h.verifySession(nil))
-	g.GET("/session/info", h.sessionInfo, h.verifySession(nil))
+	g.GET("/session/info", h.SessionInfo, h.verifySession(nil))
 
 }
 

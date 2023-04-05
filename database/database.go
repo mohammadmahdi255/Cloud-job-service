@@ -14,8 +14,12 @@ type Database struct {
 
 func NewDatabase() *Database {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/DBaaS?parseTime=true", global.User, global.Password, global.Url, global.Port)
-	db, _ := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	fmt.Println("Successfully connected to Database")
 	return &Database{db}
 }
 
@@ -90,4 +94,8 @@ func (d *Database) GetAllUserResult(email string) ([]map[string]interface{}, err
 
 	err = rows.Close()
 	return arr, err
+}
+
+func (d *Database) Delete(data interface{}) {
+	d.db.Delete(data)
 }

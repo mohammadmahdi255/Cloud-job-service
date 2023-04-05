@@ -6,11 +6,13 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/mohammadmahdi255/Cloud-job-service/database"
 	"github.com/mohammadmahdi255/Cloud-job-service/database/models"
+	"github.com/mohammadmahdi255/Cloud-job-service/global"
 	ResponseModels "github.com/mohammadmahdi255/Cloud-job-service/handler/response/models"
 	"github.com/mohammadmahdi255/Cloud-job-service/rabbitmq"
 	"github.com/mohammadmahdi255/Cloud-job-service/storage"
 	"github.com/stretchr/objx"
 	"github.com/supertokens/supertokens-golang/recipe/session/sessmodels"
+	"github.com/supertokens/supertokens-golang/recipe/thirdpartyemailpassword"
 	"github.com/supertokens/supertokens-golang/supertokens"
 	"net/http"
 )
@@ -26,6 +28,13 @@ func NewHandler(database *database.Database, store *storage.Storage, producer *r
 }
 
 func (h *Handler) Upload(c echo.Context) error {
+
+	// todo: check session exist or not
+	err := h.checkSessionValid(c)
+	if err != nil {
+		return err
+	}
+
 	// todo: get json data
 	upload, err := models.NewUpload(c.FormValue("json"))
 	if err != nil {
@@ -41,21 +50,22 @@ func (h *Handler) Upload(c echo.Context) error {
 	fmt.Println(upload.Id)
 
 	// todo: upload file in s3
-	bucket := "cloud-job-service"
 	fileHeader, err := c.FormFile("programFile")
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, err)
+		h.database.Delete(&upload)
+		return c.JSON(http.StatusInternalServerError, ResponseModels.NewMessage(err.Error()))
 	}
 
 	uploadFile, err := fileHeader.Open()
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, err)
+		h.database.Delete(&upload)
+		return c.JSON(http.StatusInternalServerError, ResponseModels.NewMessage(err.Error()))
 	}
 
 	filename := fmt.Sprintf("%d.%s", upload.Id, upload.ProgramLanguage)
-	err = h.store.Upload(bucket, filename, uploadFile)
+	err = h.store.Upload(global.Bucket, filename, uploadFile)
 	if err != nil {
-		fmt.Println(err)
+		h.database.Delete(&upload)
 		return c.JSON(http.StatusInternalServerError, ResponseModels.NewMessage(err.Error()))
 	}
 
@@ -65,15 +75,22 @@ func (h *Handler) Upload(c echo.Context) error {
 	}
 
 	// todo: put tag to track file names
-	err = h.store.PutObjectTag(bucket, filename, fileHeader.Filename)
+	err = h.store.PutObjectTag(global.Bucket, filename, fileHeader.Filename)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, ResponseModels.NewMessage(err.Error()))
 	}
 
+	fmt.Println(ResponseModels.NewMessage(upload))
 	return c.JSON(http.StatusOK, ResponseModels.NewMessage(upload))
 }
 
 func (h *Handler) Execute(c echo.Context) error {
+
+	// todo: check session exist or not
+	err := h.checkSessionValid(c)
+	if err != nil {
+		return err
+	}
 
 	// todo: get json data
 	dic, err := objx.FromJSON(c.FormValue("json"))
@@ -92,7 +109,7 @@ func (h *Handler) Execute(c echo.Context) error {
 		return c.JSON(http.StatusOK, ResponseModels.NewMessage("can not be Execute because enable is 0"))
 	}
 
-	// todo: send id with rabbitMQ to services
+	// todo: send id with rabbitMQ to mail-service
 	dic = objx.New(map[string]interface{}{
 		"id": upload.Id,
 	})
@@ -105,7 +122,20 @@ func (h *Handler) Execute(c echo.Context) error {
 }
 
 func (h *Handler) JobStatus(c echo.Context) error {
-	result, err := h.database.GetAllUserResult("adel110@aut.ac.ir")
+	// todo: check session exist or not
+	err := h.checkSessionValid(c)
+	if err != nil {
+		return err
+	}
+
+	sessionContainer := c.Get("session").(sessmodels.SessionContainer)
+	userInfo, err := thirdpartyemailpassword.GetUserById(sessionContainer.GetUserID())
+	if err != nil {
+		// TODO: Handle error
+		return c.JSON(http.StatusInternalServerError, ResponseModels.NewMessage(err))
+	}
+
+	result, err := h.database.GetAllUserResult(userInfo.Email)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, ResponseModels.NewMessage(err.Error()))
 	}
@@ -113,20 +143,21 @@ func (h *Handler) JobStatus(c echo.Context) error {
 	return c.JSON(http.StatusOK, result)
 }
 
-func (h *Handler) sessionInfo(c echo.Context) error {
-	sessionContainer := c.Get("session").(sessmodels.SessionContainer)
+func (h *Handler) SessionInfo(c echo.Context) error {
 
-	if sessionContainer == nil {
-		return errors.New("no session found")
-	}
-	sessionData, err := sessionContainer.GetSessionData()
+	// todo: check session exist or not
+	err := h.checkSessionValid(c)
 	if err != nil {
-		err = supertokens.ErrorHandler(err, c.Request(), c.Response())
-		if err != nil {
-			fmt.Println(err.Error())
-			return err
-		}
-		return nil
+		return err
+	}
+
+	sessionContainer := c.Get("session").(sessmodels.SessionContainer)
+	sessionData, _ := sessionContainer.GetSessionData()
+
+	userInfo, err := thirdpartyemailpassword.GetUserById(sessionContainer.GetUserID())
+	if err != nil {
+		// TODO: Handle error
+		return c.JSON(http.StatusInternalServerError, ResponseModels.NewMessage(err))
 	}
 
 	data := map[string]interface{}{
@@ -134,6 +165,57 @@ func (h *Handler) sessionInfo(c echo.Context) error {
 		"userId":             sessionContainer.GetUserID(),
 		"accessTokenPayload": sessionContainer.GetAccessTokenPayload(),
 		"sessionData":        sessionData,
+		"userInfo":           userInfo,
 	}
 	return c.JSON(http.StatusOK, data)
+}
+
+func (h *Handler) RevokeToken(c echo.Context) error {
+
+	// todo: check session exist or not
+	err := h.checkSessionValid(c)
+	if err != nil {
+		return err
+	}
+
+	// retrieve the session object as shown below
+	sessionContainer := c.Get("session").(sessmodels.SessionContainer)
+
+	// This will delete the session from the db and from the frontend (cookies)
+	err = sessionContainer.RevokeSession()
+	if err != nil {
+		err2 := supertokens.ErrorHandler(err, c.Request(), c.Response())
+		if err2 != nil {
+			// TODO: Send 500 status code to client
+			return err2
+		}
+		return err
+	}
+
+	data := map[string]interface{}{
+		"Status": "ok",
+	}
+
+	return c.JSON(http.StatusOK, data)
+}
+
+func (h *Handler) checkSessionValid(c echo.Context) error {
+	// retrieve the session object as shown below
+	sessionContainer := c.Get("session").(sessmodels.SessionContainer)
+
+	if sessionContainer == nil {
+		return errors.New("no session found")
+	}
+
+	_, err := sessionContainer.GetSessionData()
+	if err != nil {
+		err2 := supertokens.ErrorHandler(err, c.Request(), c.Response())
+		if err2 != nil {
+			// TODO: Send 500 status code to client
+			return err2
+		}
+		return err
+	}
+
+	return nil
 }

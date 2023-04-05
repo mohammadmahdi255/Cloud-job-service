@@ -1,7 +1,8 @@
-package services
+package mail_service
 
 import (
 	"context"
+	"fmt"
 	"github.com/mailgun/mailgun-go/v3"
 	"github.com/mohammadmahdi255/Cloud-job-service/global"
 	"time"
@@ -26,6 +27,7 @@ func (m *Mailgun) SendSimpleMessage(text string, to ...string) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
 	defer cancel()
 
-	_, id, err := m.mg.Send(ctx, mess)
+	mx, id, err := m.mg.Send(ctx, mess)
+	fmt.Println(mx)
 	return id, err
 }

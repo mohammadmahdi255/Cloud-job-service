@@ -3,7 +3,6 @@ package rabbitmq
 import (
 	"fmt"
 	amqp "github.com/rabbitmq/amqp091-go"
-	"log"
 )
 
 type Consumer struct {
@@ -16,7 +15,7 @@ func NewConsumer(url string) *Consumer {
 	c := &Consumer{URL: url}
 	err := c.connection()
 	if err != nil {
-		log.Println(err.Error())
+		fmt.Println(err.Error())
 	}
 	return c
 }
@@ -27,7 +26,7 @@ func (c *Consumer) connection() error {
 	if err != nil {
 		return fmt.Errorf("%s: %s", "Consumer Failed to connect to RabbitMQ", err)
 	}
-	log.Printf("%s\n", "Consumer Successfully connect to RabbitMQ")
+	fmt.Printf("%s\n", "Consumer Successfully connect to RabbitMQ")
 
 	err = c.channel()
 	if err != nil {
@@ -43,7 +42,7 @@ func (c *Consumer) channel() error {
 	if err != nil {
 		return fmt.Errorf("%s: %s", "Consumer Failed to open a channel", err)
 	}
-	log.Printf("%s\n", "Consumer Successfully open a channel")
+	fmt.Printf("%s\n", "Consumer Successfully open a channel")
 	return nil
 }
 

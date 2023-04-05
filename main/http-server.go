@@ -7,73 +7,40 @@ import (
 	"github.com/mohammadmahdi255/Cloud-job-service/global"
 	"github.com/mohammadmahdi255/Cloud-job-service/handler"
 	"github.com/mohammadmahdi255/Cloud-job-service/rabbitmq"
-	"github.com/mohammadmahdi255/Cloud-job-service/services"
 	"github.com/mohammadmahdi255/Cloud-job-service/storage"
 	"github.com/supertokens/supertokens-golang/recipe/emailpassword"
 	"github.com/supertokens/supertokens-golang/recipe/emailverification"
 	"github.com/supertokens/supertokens-golang/recipe/emailverification/evmodels"
 	"github.com/supertokens/supertokens-golang/recipe/session"
 	"github.com/supertokens/supertokens-golang/recipe/session/sessmodels"
+	"github.com/supertokens/supertokens-golang/recipe/thirdpartyemailpassword"
+	"github.com/supertokens/supertokens-golang/recipe/thirdpartyemailpassword/tpepmodels"
 	"github.com/supertokens/supertokens-golang/supertokens"
 	"net/http"
-	"os"
 	"strings"
-	"sync"
 )
 
 func main() {
 	e := echo.New()
 	g := e.Group("/api")
 
-	url := os.Getenv("CLOUDAMQP_URL")
-
-	if url == "" {
-		fmt.Println("localhost rabbitMQ")
-		url = "amqp://guest:guest@localhost:5672/"
-	}
-
 	d := database.NewDatabase()
 	s := storage.NewStorage("default", global.Endpoint)
-	p := rabbitmq.NewProducer(url)
+	p := rabbitmq.NewProducer(global.CloudamqpUrl)
 
 	err := s.CreateBucket(global.Bucket)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	objects, err := s.GetListObject(global.Bucket)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	for _, item := range objects {
-		fmt.Println("Name:         ", *item.Key)
-		fmt.Println("Last modified:", *item.LastModified)
-		fmt.Println("Size:         ", *item.Size)
-		fmt.Println("Storage class:", *item.StorageClass)
-		fmt.Println("ETag:", *item.ETag)
-		fmt.Println("")
-	}
-
 	h := handler.NewHandler(d, s, p)
 	h.RegisterRoutes(g)
-
-	mutex := &sync.RWMutex{}
-	mutex.Lock()
-	go func() {
-		services.JobMaker(mutex, global.Bucket, global.Endpoint, url)
-	}()
-
-	mutex.Lock()
-	go func() {
-		services.ExecuteJob(mutex)
-	}()
 
 	apiBasePath := "/api/auth"
 	err = supertokens.Init(supertokens.TypeInput{
 		Supertokens: &supertokens.ConnectionInfo{
-			ConnectionURI: "https://dev-f6572cc1be7611edbd48135fc52bc1b6-ap-southeast-1.aws.supertokens.io:3573",
-			APIKey:        "v7BAm-gbgWJ6xKtw9K=RGSTV9WcgD3",
+			ConnectionURI: global.URI,
+			APIKey:        global.APIKey,
 		},
 		AppInfo: supertokens.AppInfo{
 			AppName:       "cloud-job-service",
@@ -82,6 +49,7 @@ func main() {
 			WebsiteDomain: "http://localhost:8080",
 		},
 		RecipeList: []supertokens.Recipe{
+			thirdpartyemailpassword.Init(&tpepmodels.TypeInput{}),
 			emailpassword.Init(nil),
 			emailverification.Init(evmodels.TypeInput{
 				Mode: evmodels.ModeRequired, // or models.ModeOptional
