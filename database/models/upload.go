@@ -20,7 +20,6 @@ func NewUpload(j string) (*Upload, error) {
 		return nil, err
 	}
 
-	upload.Email = dic.Get("email").String()
 	upload.Inputs = dic.Get("inputs").String()
 	upload.ProgramLanguage = dic.Get("programLanguage").String()
 	upload.IsEnable = dic.Get("isEnable").Bool()

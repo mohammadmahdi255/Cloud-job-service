@@ -35,8 +35,16 @@ func (h *Handler) Upload(c echo.Context) error {
 		return err
 	}
 
+	sessionContainer := c.Get("session").(sessmodels.SessionContainer)
+	userInfo, err := thirdpartyemailpassword.GetUserById(sessionContainer.GetUserID())
+	if err != nil {
+		// TODO: Handle error
+		return c.JSON(http.StatusInternalServerError, ResponseModels.NewMessage(err))
+	}
+
 	// todo: get json data
 	upload, err := models.NewUpload(c.FormValue("json"))
+	upload.Email = userInfo.Email
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, ResponseModels.NewMessage(err.Error()))
 	}
@@ -92,6 +100,13 @@ func (h *Handler) Execute(c echo.Context) error {
 		return err
 	}
 
+	sessionContainer := c.Get("session").(sessmodels.SessionContainer)
+	userInfo, err := thirdpartyemailpassword.GetUserById(sessionContainer.GetUserID())
+	if err != nil {
+		// TODO: Handle error
+		return c.JSON(http.StatusInternalServerError, ResponseModels.NewMessage(err))
+	}
+
 	// todo: get json data
 	dic, err := objx.FromJSON(c.FormValue("json"))
 	if err != nil {
@@ -102,6 +117,10 @@ func (h *Handler) Execute(c echo.Context) error {
 	upload, err := h.database.GetUpload(dic.Get("id").Int())
 	if err != nil {
 		return c.JSON(http.StatusNotFound, ResponseModels.NewMessage(err.Error()))
+	}
+
+	if upload.Email != userInfo.Email {
+		return c.JSON(http.StatusBadRequest, "Your no owner of this id")
 	}
 
 	// todo: check can be Executed
