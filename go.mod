@@ -17,6 +17,7 @@ require (
 	github.com/MicahParks/keyfunc v1.0.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/derekstavis/go-qs v0.0.0-20180720192143-9eef69e6c4e7 // indirect
+	github.com/fatih/structs v1.1.0 // indirect
 	github.com/go-chi/chi v4.0.0+incompatible // indirect
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
 	github.com/golang-jwt/jwt/v4 v4.1.0 // indirect

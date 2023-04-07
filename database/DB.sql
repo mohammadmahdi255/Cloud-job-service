@@ -18,7 +18,7 @@ CREATE TABLE uploads (
 CREATE TABLE jobs (
   id 				int NOT NULL AUTO_INCREMENT,
   upload 			int,
-  job_query 		varchar(512),
+  job_query 		varchar(4096),
   job_status  		ENUM('executed', 'none') NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (upload) REFERENCES uploads(id)

@@ -96,6 +96,30 @@ func (d *Database) GetAllUserResult(email string) ([]map[string]interface{}, err
 	return arr, err
 }
 
+func (d *Database) GetAllUserUpload(email string) ([]map[string]interface{}, error) {
+	rows, err := d.db.Table("uploads").Select("uploads.id, program_language").
+		Where("email = ?", email).Rows()
+
+	if err != nil {
+		return nil, err
+	}
+
+	arr := make([]map[string]interface{}, 0, 10)
+
+	for rows.Next() {
+		dic := map[string]interface{}{}
+		err := d.db.ScanRows(rows, dic)
+		if err != nil {
+			return nil, err
+		}
+
+		arr = append(arr, dic)
+	}
+
+	err = rows.Close()
+	return arr, err
+}
+
 func (d *Database) Delete(data interface{}) {
 	d.db.Delete(data)
 }

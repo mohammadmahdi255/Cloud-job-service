@@ -3,6 +3,7 @@ package handler
 import (
 	"errors"
 	"fmt"
+	"github.com/fatih/structs"
 	"github.com/labstack/echo/v4"
 	"github.com/mohammadmahdi255/Cloud-job-service/database"
 	"github.com/mohammadmahdi255/Cloud-job-service/database/models"
@@ -83,7 +84,7 @@ func (h *Handler) Upload(c echo.Context) error {
 	}
 
 	// todo: put tag to track file names
-	err = h.store.PutObjectTag(global.Bucket, filename, fileHeader.Filename)
+	err = h.store.PutObjectTag(global.Bucket, filename, "Name", fileHeader.Filename)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, ResponseModels.NewMessage(err.Error()))
 	}
@@ -237,4 +238,41 @@ func (h *Handler) checkSessionValid(c echo.Context) error {
 	}
 
 	return nil
+}
+
+func (h *Handler) ListUploads(c echo.Context) error {
+	// todo: check session exist or not
+	err := h.checkSessionValid(c)
+	if err != nil {
+		return err
+	}
+
+	sessionContainer := c.Get("session").(sessmodels.SessionContainer)
+	userInfo, err := thirdpartyemailpassword.GetUserById(sessionContainer.GetUserID())
+	if err != nil {
+		// TODO: Handle error
+		return c.JSON(http.StatusInternalServerError, ResponseModels.NewMessage(err))
+	}
+
+	uploads, err := h.database.GetAllUserUpload(userInfo.Email)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, ResponseModels.NewMessage(err.Error()))
+	}
+
+	list, err := h.store.GetListObject(global.Bucket)
+
+	arr := make([]map[string]interface{}, 0, 10)
+
+	j := 0
+	for i := 0; i < len(list); i++ {
+		key := fmt.Sprintf("%d.%s", uploads[j]["id"], uploads[j]["program_language"])
+		if *list[i].Key == key {
+			dic := structs.Map(list[i])
+			dic["upload"] = uploads[j]
+			arr = append(arr, dic)
+			j++
+		}
+	}
+
+	return c.JSON(http.StatusOK, arr)
 }

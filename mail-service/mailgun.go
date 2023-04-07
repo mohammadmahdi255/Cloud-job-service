@@ -8,17 +8,15 @@ import (
 	"time"
 )
 
-type Mailgun struct {
-	mg *mailgun.MailgunImpl
-}
+type Mailgun struct{}
 
 func NewMailgun() *Mailgun {
-	mg := mailgun.NewMailgun(global.Domain, global.ApiPrivateKey)
-	return &Mailgun{mg: mg}
+	return &Mailgun{}
 }
 
 func (m *Mailgun) SendSimpleMessage(text string, to ...string) (string, error) {
-	mess := m.mg.NewMessage(
+	mg := mailgun.NewMailgun(global.Domain, global.ApiPrivateKey)
+	mess := mg.NewMessage(
 		global.From,
 		"Cloud-job-service",
 		text,
@@ -27,7 +25,7 @@ func (m *Mailgun) SendSimpleMessage(text string, to ...string) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
 	defer cancel()
 
-	mx, id, err := m.mg.Send(ctx, mess)
+	mx, id, err := mg.Send(ctx, mess)
 	fmt.Println(mx)
 	return id, err
 }

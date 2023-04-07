@@ -81,15 +81,15 @@ func (s *Storage) Upload(bucket, filename string, file multipart.File) error {
 	return nil
 }
 
-func (s *Storage) PutObjectTag(bucket, object string, name string) error {
+func (s *Storage) PutObjectTag(bucket, object string, key string, value string) error {
 	params := &s3.PutObjectTaggingInput{
 		Bucket: &bucket,
 		Key:    &object,
 		Tagging: &s3.Tagging{
 			TagSet: []*s3.Tag{
 				{
-					Key:   aws.String("name"),
-					Value: aws.String(name),
+					Key:   aws.String(key),
+					Value: aws.String(value),
 				},
 			},
 		},

@@ -14,6 +14,7 @@ func (h *Handler) RegisterRoutes(g *echo.Group) {
 	g.POST("/signout", h.RevokeToken, h.verifySession(nil))
 
 	g.GET("/job/status", h.JobStatus, h.verifySession(nil))
+	g.GET("/upload/info", h.ListUploads, h.verifySession(nil))
 	g.GET("/session/info", h.SessionInfo, h.verifySession(nil))
 
 }

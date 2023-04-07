@@ -103,7 +103,10 @@ func executeRequest(job *models.Job) (string, error) {
 	}
 
 	// check the response
-	respDump, _ := httputil.DumpResponse(resp, true)
+	respDump, err := httputil.DumpResponse(resp, true)
+	if err != nil {
+		return "", err
+	}
 	log.Printf("\nresponse:\n%s\n\n", respDump)
 
 	// create response struct
