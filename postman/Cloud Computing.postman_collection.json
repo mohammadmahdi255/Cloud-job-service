@@ -7,6 +7,72 @@
 	},
 	"item": [
 		{
+			"name": "sign up",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"formFields\": [\r\n    {\r\n      \"id\": \"email\",\r\n      \"value\": \"adel@aut.ac.ir\"\r\n    },\r\n    {\r\n      \"id\": \"password\",\r\n      \"value\": \"lae@98255\"\r\n    }\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8080/api/auth/signup",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "sign in",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"formFields\": [\r\n    {\r\n      \"id\": \"email\",\r\n      \"value\": \"nemati.mahdi255@gmail.com\"\r\n    },\r\n    {\r\n      \"id\": \"password\",\r\n      \"value\": \"lae@12345678\"\r\n    }\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8080/api/auth/signin",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"signin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "upload",
 			"request": {
 				"auth": {
@@ -14,7 +80,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsInZlcnNpb24iOiIyIn0=.eyJzZXNzaW9uSGFuZGxlIjoiMmExN2ZjYWYtNjYzMi00ODQyLWJhNTYtMjIxMWIyZDMxMTg2IiwidXNlcklkIjoiZWQ2YWEyYmUtMzBlNi00M2JkLWI5NjItODVhOGE3OGNjNzQ3IiwicmVmcmVzaFRva2VuSGFzaDEiOiI2ZjIwYmE1MTJhOTUxOWYyNjY2NzY3ZjRiYzE2M2E1YWFhYzJlNmQyOWE5YzJlN2MyMzI0ZWQyODU1MTU4MDk4IiwicGFyZW50UmVmcmVzaFRva2VuSGFzaDEiOm51bGwsInVzZXJEYXRhIjp7InN0LWV2Ijp7InQiOjE2ODA3MTYwNjA1OTMsInYiOmZhbHNlfX0sImFudGlDc3JmVG9rZW4iOm51bGwsImV4cGlyeVRpbWUiOjE2ODA3MTk2NjA5MjgsInRpbWVDcmVhdGVkIjoxNjgwNzE2MDYwOTI4LCJsbXJ0IjoxNjgwNzE2MDYwOTI4fQ==.OfFeVPf7PyzTAxunCs/V+9NzWdJzfB/HjFEjHnCvB0k7SY5P3Ouodn9YWMyq8j9WfeabqBFUHsP38OLhYkw+xKINpYkswsxdbhJ4eiB83lb8PTI4s9ajxerLicog+KQR8bnMiVR4Irdz42okHcOasGfGIGcv5Sg5DPf5JXnbbT7k234YeCnaGlFGNEfBz7jhYMF2bU108c1pHHlt8AIXjfAsmpQSeUNlhyqxBvzmyWxc4BAlI/IHSMhG9LeEILG7tYHF7pnEhWbkKXIuDY3gO7OFiZQdXAkio3HPVfa8wS0Fd0u7l8g6dkd+BdMbzshCGBQobDiBu3uLS+jIhdtxKA==",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsInZlcnNpb24iOiIyIn0=.eyJzZXNzaW9uSGFuZGxlIjoiNDRkYWJjNGYtMjdjMy00OWY1LWJmM2UtNjI4ODk3MjgwMDUyIiwidXNlcklkIjoiY2RkNDFiYzctYThmNi00YmM1LThiOWUtNjNmODA5NDJiMjBiIiwicmVmcmVzaFRva2VuSGFzaDEiOiIzZDdhMWU5YzY5NzQ1MTE5ZjY1MDExODlmZGE4YjA4MTBiODkwMDJjNzIwMjE2OWJkNTBmYTQ1MjMzNDRjZGFiIiwicGFyZW50UmVmcmVzaFRva2VuSGFzaDEiOm51bGwsInVzZXJEYXRhIjp7InN0LWV2Ijp7InQiOjE2ODA5Nzk2NzQ5NjEsInYiOmZhbHNlfX0sImFudGlDc3JmVG9rZW4iOm51bGwsImV4cGlyeVRpbWUiOjE2ODA5ODMyNzYyNjcsInRpbWVDcmVhdGVkIjoxNjgwOTc5Njc2MjY3LCJsbXJ0IjoxNjgwOTc5Njc2MjY3fQ==.YCOIjjpoRvTaoA3xkZbv/Cn246U421H+MxOjF3EiJtkbGN+6eTw660YitrotGZnMU7tOxqmkUtCIjYYwdNgSvp+A6TJQOuvg7jmr/3MLl/g0oJagD1MIycm4oM9/J049foiu21emMKjMQl32w2kfkTDAq4qNOeHYLpX0pEczGuqdbmGnXexMkoukWvHCGJmH9JD0GWovrImxsfxCMUC8WHlB8Sc0teWnj8RLJvP61RPLmlXvEs85y7F4bN+3cS+iIcrybhkQq4v3LRC/aaOY+pzW/yxWEyvSZ3CwqQXE9mtM6RPcxfT+M14RpZ/ihmAt4pGpT04t36oJQ/Dw9oq12A==",
 							"type": "string"
 						}
 					]
@@ -28,7 +94,7 @@
 							"key": "programFile",
 							"contentType": "multipart/form-data",
 							"type": "file",
-							"src": "/E:/Term 8 1401-1402/Cloud Computing/HW1/Cloud-job-service/Test Programs/Python/main.py"
+							"src": "/E:/Term 8 1401-1402/Cloud Computing/HW1/Cloud-job-service/Test Programs/Python/test1.py"
 						},
 						{
 							"key": "inputs",
@@ -38,11 +104,6 @@
 						{
 							"key": "programLanguage",
 							"value": "py",
-							"type": "text"
-						},
-						{
-							"key": "isEnable",
-							"value": "true",
 							"type": "text"
 						}
 					]
@@ -73,7 +134,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsInZlcnNpb24iOiIyIn0=.eyJzZXNzaW9uSGFuZGxlIjoiMmExN2ZjYWYtNjYzMi00ODQyLWJhNTYtMjIxMWIyZDMxMTg2IiwidXNlcklkIjoiZWQ2YWEyYmUtMzBlNi00M2JkLWI5NjItODVhOGE3OGNjNzQ3IiwicmVmcmVzaFRva2VuSGFzaDEiOiI2ZjIwYmE1MTJhOTUxOWYyNjY2NzY3ZjRiYzE2M2E1YWFhYzJlNmQyOWE5YzJlN2MyMzI0ZWQyODU1MTU4MDk4IiwicGFyZW50UmVmcmVzaFRva2VuSGFzaDEiOm51bGwsInVzZXJEYXRhIjp7InN0LWV2Ijp7InQiOjE2ODA3MTYwNjA1OTMsInYiOmZhbHNlfX0sImFudGlDc3JmVG9rZW4iOm51bGwsImV4cGlyeVRpbWUiOjE2ODA3MTk2NjA5MjgsInRpbWVDcmVhdGVkIjoxNjgwNzE2MDYwOTI4LCJsbXJ0IjoxNjgwNzE2MDYwOTI4fQ==.OfFeVPf7PyzTAxunCs/V+9NzWdJzfB/HjFEjHnCvB0k7SY5P3Ouodn9YWMyq8j9WfeabqBFUHsP38OLhYkw+xKINpYkswsxdbhJ4eiB83lb8PTI4s9ajxerLicog+KQR8bnMiVR4Irdz42okHcOasGfGIGcv5Sg5DPf5JXnbbT7k234YeCnaGlFGNEfBz7jhYMF2bU108c1pHHlt8AIXjfAsmpQSeUNlhyqxBvzmyWxc4BAlI/IHSMhG9LeEILG7tYHF7pnEhWbkKXIuDY3gO7OFiZQdXAkio3HPVfa8wS0Fd0u7l8g6dkd+BdMbzshCGBQobDiBu3uLS+jIhdtxKA==",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsInZlcnNpb24iOiIyIn0=.eyJzZXNzaW9uSGFuZGxlIjoiNDRkYWJjNGYtMjdjMy00OWY1LWJmM2UtNjI4ODk3MjgwMDUyIiwidXNlcklkIjoiY2RkNDFiYzctYThmNi00YmM1LThiOWUtNjNmODA5NDJiMjBiIiwicmVmcmVzaFRva2VuSGFzaDEiOiIzZDdhMWU5YzY5NzQ1MTE5ZjY1MDExODlmZGE4YjA4MTBiODkwMDJjNzIwMjE2OWJkNTBmYTQ1MjMzNDRjZGFiIiwicGFyZW50UmVmcmVzaFRva2VuSGFzaDEiOm51bGwsInVzZXJEYXRhIjp7InN0LWV2Ijp7InQiOjE2ODA5Nzk2NzQ5NjEsInYiOmZhbHNlfX0sImFudGlDc3JmVG9rZW4iOm51bGwsImV4cGlyeVRpbWUiOjE2ODA5ODMyNzYyNjcsInRpbWVDcmVhdGVkIjoxNjgwOTc5Njc2MjY3LCJsbXJ0IjoxNjgwOTc5Njc2MjY3fQ==.YCOIjjpoRvTaoA3xkZbv/Cn246U421H+MxOjF3EiJtkbGN+6eTw660YitrotGZnMU7tOxqmkUtCIjYYwdNgSvp+A6TJQOuvg7jmr/3MLl/g0oJagD1MIycm4oM9/J049foiu21emMKjMQl32w2kfkTDAq4qNOeHYLpX0pEczGuqdbmGnXexMkoukWvHCGJmH9JD0GWovrImxsfxCMUC8WHlB8Sc0teWnj8RLJvP61RPLmlXvEs85y7F4bN+3cS+iIcrybhkQq4v3LRC/aaOY+pzW/yxWEyvSZ3CwqQXE9mtM6RPcxfT+M14RpZ/ihmAt4pGpT04t36oJQ/Dw9oq12A==",
 							"type": "string"
 						}
 					]
@@ -85,7 +146,7 @@
 					"formdata": [
 						{
 							"key": "id",
-							"value": "17",
+							"value": "1",
 							"contentType": "application/json",
 							"type": "default"
 						},
@@ -117,7 +178,7 @@
 			"response": []
 		},
 		{
-			"name": "job status",
+			"name": "jobs status",
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -132,7 +193,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://127.0.0.1:8080/api/job/status",
+					"raw": "http://127.0.0.1:8080/api/jobs/status",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -143,7 +204,7 @@
 					"port": "8080",
 					"path": [
 						"api",
-						"job",
+						"jobs",
 						"status"
 					]
 				}
@@ -152,28 +213,21 @@
 		},
 		{
 			"name": "upload info",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsInZlcnNpb24iOiIyIn0=.eyJzZXNzaW9uSGFuZGxlIjoiYmYzOWQ1MzItNjc2Yi00NDNiLWI2Y2UtZDc5NjRkNmI3NDRkIiwidXNlcklkIjoiY2RkNDFiYzctYThmNi00YmM1LThiOWUtNjNmODA5NDJiMjBiIiwicmVmcmVzaFRva2VuSGFzaDEiOiIyODBmZDRkOGYzMjA1N2U3MjViZTdiMmYyMzk3NzEyOWVlNGUzM2FjOGI5OTg5ZDRlNWFlOWNhMGE4MjA2NWU0IiwicGFyZW50UmVmcmVzaFRva2VuSGFzaDEiOm51bGwsInVzZXJEYXRhIjp7InN0LWV2Ijp7InQiOjE2ODA4OTU5ODk0OTIsInYiOmZhbHNlfX0sImFudGlDc3JmVG9rZW4iOm51bGwsImV4cGlyeVRpbWUiOjE2ODA4OTk1OTA2NDYsInRpbWVDcmVhdGVkIjoxNjgwODk1OTkwNjQ2LCJsbXJ0IjoxNjgwODk1OTkwNjQ2fQ==.cSP6ia2v5CpRVU/Q4BfjHoeoAglITHGPB2lnaycL/xmeJIpusgBg72kx0Ua5dBdVd8Y+XsEy5zT9JU1Ij2Kbmf+Hz4ji+6eB7dATw/wgOIQ1PNLbfzTpc0yUx1jsiIbBYeWt+A0fpYTaL77CoxgHJYFAw4kIby4UJfZTPF4N7ISLY6C4s20ZTI2DegcT03+hC8qM7dtXzTiwQykCYkFYDuAx0pnjMbEZou2yVmXRRvi9bUM55yl0j45Ucd6kbn3EF9FreJ3P/dpF8NORbamTIu/qoCT80wl3LjByyan98cHU7Uu+91QFn9DO0LfXouZdiCJaSoqHA/xZhin2IkifIg==",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsInZlcnNpb24iOiIyIn0=.eyJzZXNzaW9uSGFuZGxlIjoiNDRkYWJjNGYtMjdjMy00OWY1LWJmM2UtNjI4ODk3MjgwMDUyIiwidXNlcklkIjoiY2RkNDFiYzctYThmNi00YmM1LThiOWUtNjNmODA5NDJiMjBiIiwicmVmcmVzaFRva2VuSGFzaDEiOiIzZDdhMWU5YzY5NzQ1MTE5ZjY1MDExODlmZGE4YjA4MTBiODkwMDJjNzIwMjE2OWJkNTBmYTQ1MjMzNDRjZGFiIiwicGFyZW50UmVmcmVzaFRva2VuSGFzaDEiOm51bGwsInVzZXJEYXRhIjp7InN0LWV2Ijp7InQiOjE2ODA5Nzk2NzQ5NjEsInYiOmZhbHNlfX0sImFudGlDc3JmVG9rZW4iOm51bGwsImV4cGlyeVRpbWUiOjE2ODA5ODMyNzYyNjcsInRpbWVDcmVhdGVkIjoxNjgwOTc5Njc2MjY3LCJsbXJ0IjoxNjgwOTc5Njc2MjY3fQ==.YCOIjjpoRvTaoA3xkZbv/Cn246U421H+MxOjF3EiJtkbGN+6eTw660YitrotGZnMU7tOxqmkUtCIjYYwdNgSvp+A6TJQOuvg7jmr/3MLl/g0oJagD1MIycm4oM9/J049foiu21emMKjMQl32w2kfkTDAq4qNOeHYLpX0pEczGuqdbmGnXexMkoukWvHCGJmH9JD0GWovrImxsfxCMUC8WHlB8Sc0teWnj8RLJvP61RPLmlXvEs85y7F4bN+3cS+iIcrybhkQq4v3LRC/aaOY+pzW/yxWEyvSZ3CwqQXE9mtM6RPcxfT+M14RpZ/ihmAt4pGpT04t36oJQ/Dw9oq12A==",
 							"type": "string"
 						}
 					]
 				},
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": []
-				},
 				"url": {
-					"raw": "http://127.0.0.1:8080/api/upload/info",
+					"raw": "http://127.0.0.1:8080/api/uploads/info",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -184,7 +238,7 @@
 					"port": "8080",
 					"path": [
 						"api",
-						"upload",
+						"uploads",
 						"info"
 					]
 				}
@@ -232,73 +286,10 @@
 			"response": []
 		},
 		{
-			"name": "signup",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"formFields\": [\r\n    {\r\n      \"id\": \"email\",\r\n      \"value\": \"adel@aut.ac.ir\"\r\n    },\r\n    {\r\n      \"id\": \"password\",\r\n      \"value\": \"lae@98255\"\r\n    }\r\n  ]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://127.0.0.1:8080/api/auth/signup",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "8080",
-					"path": [
-						"api",
-						"auth",
-						"signup"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "signin",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"formFields\": [\r\n    {\r\n      \"id\": \"email\",\r\n      \"value\": \"nemati.mahdi255@gmail.com\"\r\n    },\r\n    {\r\n      \"id\": \"password\",\r\n      \"value\": \"lae@12345678\"\r\n    }\r\n  ]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://127.0.0.1:8080/api/auth/signin",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "8080",
-					"path": [
-						"api",
-						"auth",
-						"signin"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "signout",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -310,8 +301,12 @@
 						}
 					]
 				},
-				"method": "POST",
+				"method": "GET",
 				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
 				"url": {
 					"raw": "http://127.0.0.1:8080/api/signout",
 					"protocol": "http",

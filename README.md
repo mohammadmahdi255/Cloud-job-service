@@ -20,8 +20,8 @@ Mail Service [MailGun](https://www.mailgun.com/)
 
 Code Executor [Codex](https://api.codex.jaagrav.in)
 
-- [Database](#Database)
-
+- [Database](#database)
+- [API](#api)
 
 ## Database
 #### Tables :
@@ -44,7 +44,7 @@ Code Executor [Codex](https://api.codex.jaagrav.in)
 |:-------|--------------|--------|-----------------------------|--------------|
 | int    | varchar(320) | TEXT   | ENUM('in progress', 'done') | datetime     |
 
-## API: 
+## API 
 
 ### Specs:
 
@@ -139,3 +139,48 @@ request structure:
 #### sign out:
 
 `GET /api/signout`
+
+## Package Structure
+
+```
+├─── database                // database functions and models
+│    ├─── database.go
+│    ├─── DB.sql
+│    └─── models
+│         ├─── job.go
+│         ├─── result.go
+│         └─── upload.go
+│
+├───global                   // global constant, api key, URL, URI
+│       constant.go
+│
+├─── handler                 // handler package for routing and request handling
+│    ├─── handler.go
+│    ├─── routes.go
+│    └─── response
+│         └─── models
+│              └─── message.go
+│
+├─── mail-service            // mailgun service function
+│    └─── mailgun.go
+│
+├─── main                    // job executor service, http-server, job service
+│    ├─── executor.go
+│    ├─── http-server.go
+│    └─── job.go
+│
+├─── postman                 // postman export file
+│    └─── Cloud Computing.postman_collection.json
+│
+├─── rabbitmq                // rabbitmq consumer and producer handler
+│    ├─── consumer.go
+│    └─── producer.go
+│
+├─── storage                 // handle S3 Storage
+│   └─── storage.go
+│
+└─── Test Programs           // test program for upload
+     └─── Python
+          ├─── test1.py
+          └─── test2.py
+```
