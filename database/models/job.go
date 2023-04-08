@@ -12,7 +12,7 @@ func NewJob(uploadId int, query string) *Job {
 
 	job.Upload = uploadId
 	job.JobQuery = query
-	job.JobStatus = "none"
+	job.JobStatus = "suspend"
 
 	return job
 }

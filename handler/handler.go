@@ -16,6 +16,7 @@ import (
 	"github.com/supertokens/supertokens-golang/recipe/thirdpartyemailpassword"
 	"github.com/supertokens/supertokens-golang/supertokens"
 	"net/http"
+	"strconv"
 )
 
 type Handler struct {
@@ -44,8 +45,11 @@ func (h *Handler) Upload(c echo.Context) error {
 	}
 
 	// todo: get json data
-	upload, err := models.NewUpload(c.FormValue("json"))
-	upload.Email = userInfo.Email
+	upload, err := models.NewUpload(
+		userInfo.Email,
+		c.FormValue("inputs"),
+		c.FormValue("programLanguage"),
+	)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, ResponseModels.NewMessage(err.Error()))
 	}
@@ -108,14 +112,14 @@ func (h *Handler) Execute(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, ResponseModels.NewMessage(err))
 	}
 
-	// todo: get json data
-	dic, err := objx.FromJSON(c.FormValue("json"))
+	id, err := strconv.Atoi(c.FormValue("id"))
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, ResponseModels.NewMessage(err.Error()))
+		// TODO: Handle error
+		return c.JSON(http.StatusBadRequest, ResponseModels.NewMessage(err))
 	}
 
 	// todo: get upload row
-	upload, err := h.database.GetUpload(dic.Get("id").Int())
+	upload, err := h.database.GetUpload(id)
 	if err != nil {
 		return c.JSON(http.StatusNotFound, ResponseModels.NewMessage(err.Error()))
 	}
@@ -130,7 +134,7 @@ func (h *Handler) Execute(c echo.Context) error {
 	}
 
 	// todo: send id with rabbitMQ to mail-service
-	dic = objx.New(map[string]interface{}{
+	dic := objx.New(map[string]interface{}{
 		"id": upload.Id,
 	})
 	err = h.producer.Send(dic.MustJSON())
@@ -141,7 +145,7 @@ func (h *Handler) Execute(c echo.Context) error {
 	return c.JSON(http.StatusOK, ResponseModels.NewMessage(fmt.Sprintf("new job created for upload with id: %d", upload.Id)))
 }
 
-func (h *Handler) JobStatus(c echo.Context) error {
+func (h *Handler) JobsStatus(c echo.Context) error {
 	// todo: check session exist or not
 	err := h.checkSessionValid(c)
 	if err != nil {
@@ -213,7 +217,7 @@ func (h *Handler) RevokeToken(c echo.Context) error {
 	}
 
 	data := map[string]interface{}{
-		"Status": "ok",
+		"message": "sing out successfully",
 	}
 
 	return c.JSON(http.StatusOK, data)

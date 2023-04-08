@@ -47,7 +47,7 @@ func (d *Database) AddJob(job *models.Job) error {
 
 func (d *Database) GetJob() (*models.Job, error) {
 	job := &models.Job{}
-	err := d.db.First(job, "job_status = ?", "none").Error
+	err := d.db.First(job, "job_status = ?", "suspend").Error
 	return job, err
 }
 
