@@ -6,7 +6,7 @@ import (
 	"github.com/mohammadmahdi255/Cloud-job-service/database"
 	"github.com/mohammadmahdi255/Cloud-job-service/database/models"
 	"github.com/mohammadmahdi255/Cloud-job-service/global"
-	mail_service "github.com/mohammadmahdi255/Cloud-job-service/mail-service"
+	mailservice "github.com/mohammadmahdi255/Cloud-job-service/mail-service"
 	"github.com/stretchr/objx"
 	"io"
 	"log"
@@ -18,7 +18,7 @@ import (
 func main() {
 	for {
 		d := database.NewDatabase()
-		m := mail_service.NewMailgun()
+		m := mailservice.NewMailgun()
 
 		for {
 
