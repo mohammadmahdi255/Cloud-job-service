@@ -61,7 +61,7 @@ request structure:
 
 `body: json`
 
-```
+```json
 {
     "formFields": [
     {
@@ -84,7 +84,7 @@ request structure:
 
 `body: json`
 
-```
+```json
 {
     "formFields": [
     {
@@ -184,4 +184,37 @@ request structure:
      └─── Python
           ├─── test1.py
           └─── test2.py
+```
+
+## global\constant.go
+
+```go
+package global
+// constants for accessing cloud service
+const (
+	// Endpoint Bucket s3 storage constant
+	Endpoint = ""
+	Bucket   = ""
+
+	// User Password Url Port DBaaS constant
+	User     = ""
+	Password = ""
+	Url      = ""
+	Port     = 0
+
+	// Domain ApiPrivateKey From mailgun constant
+	Domain        = ""
+	ApiPrivateKey = ""
+	From          = ""
+
+	// ApiUrl codex api
+	ApiUrl = ""
+
+	// CloudamqpUrl CloudAMQP
+	CloudamqpUrl = ""
+
+	// URI APIKey SuperTokens
+	URI    = ""
+	APIKey = ""
+)
 ```
